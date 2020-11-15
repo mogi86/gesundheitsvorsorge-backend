@@ -6,9 +6,18 @@ build:
 fmt:
 	go fmt ./...
 
+.PHONY: run-for-local
+run-for-local: build
+	./server
+
 .PHONY: run
 run: build
-	./server
+	docker-compose build
+	docker-compose up -d
+
+.PHONY: stop
+stop:
+	docker-compose stop
 
 .PHONY: test
 test:

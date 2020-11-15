@@ -16,3 +16,15 @@ $ make test
 ```bash
 $ make run
 ```
+
+- call api (need to use other terminal session)
+
+```bash
+$ curl -v -X GET "http://localhost:8000"
+```
+
+- stop
+
+```bash
+$ make stop
+```
