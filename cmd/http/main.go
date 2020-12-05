@@ -10,8 +10,7 @@ import (
 )
 
 func main() {
-	provider := usecase.New(&usecase.UseCase{})
-	cont := controller.NewController(provider.UseCaseInterface)
+	cont := controller.NewController(&usecase.UseCase{})
 	http.Handle("/", cont)
 
 	logrus.Infof("build server...")

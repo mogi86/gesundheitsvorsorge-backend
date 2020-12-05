@@ -6,16 +6,6 @@ type Interface interface {
 	Sample() string
 }
 
-type Provider struct {
-	UseCaseInterface Interface
-}
-
-func New(useCaseInterface Interface) *Provider {
-	return &Provider{
-		UseCaseInterface: useCaseInterface,
-	}
-}
-
 type UseCase struct {
 	//TODO
 }
