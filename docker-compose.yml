@@ -1,6 +1,24 @@
 version: "3.8"
 services:
-  gesundheitsvorsorge-api:
-    build: .
+  api:
+    build:
+      context: ./
+      dockerfile: ./docker/api/Dockerfile
     ports:
       - "8000:8000"
+  db:
+    build:
+      context: ./
+      dockerfile: ./docker/db/Dockerfile
+    # see: https://hub.docker.com/_/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: "gesundheitsvorsorge_db"
+      MYSQL_USER: "gesundheitsvorsorge"
+      MYSQL_PASSWORD: "gesundheitsvorsorge"
+      MYSQL_HOST: "localhost"
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
