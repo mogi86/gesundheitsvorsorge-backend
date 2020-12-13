@@ -2,9 +2,10 @@ package controller
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/mogi86/gesundheitsvorsorge-backend/application/usecase"
 	"github.com/sirupsen/logrus"
-	"net/http"
 )
 
 type Controller struct {

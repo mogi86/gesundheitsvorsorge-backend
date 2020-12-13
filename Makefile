@@ -22,3 +22,10 @@ stop:
 .PHONY: test
 test:
 	go test -v ./...
+
+.PHONY: migration
+migration:
+	go build -o migration \
+		-ldflags "-X main.user=gesundheitsvorsorge -X main.password=gesundheitsvorsorge -X main.host=0.0.0.0 -X main.port=3306 -X main.DBName=gesundheitsvorsorge_db" \
+		cmd/db/main.go
+	./migration
