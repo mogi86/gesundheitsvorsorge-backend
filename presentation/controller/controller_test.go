@@ -1,11 +1,12 @@
 package controller
 
 import (
-	"github.com/golang/mock/gomock"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/golang/mock/gomock"
 
 	"github.com/mogi86/gesundheitsvorsorge-backend/application/usecase/usecase_mock"
 )
@@ -19,6 +20,7 @@ func TestController_ServeHTTP(t *testing.T) {
 	m.EXPECT().Sample().Return("test response!")
 
 	controller := NewController(m)
+
 	server := httptest.NewServer(controller)
 	defer server.Close()
 

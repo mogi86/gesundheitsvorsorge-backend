@@ -6,6 +6,18 @@ build:
 fmt:
 	go fmt ./...
 
+.PHONY: lint
+lint:
+	golangci-lint run --disable-all \
+		-E govet \
+		-E unused \
+		-E gocyclo \
+		-E gofmt \
+		-E goimports \
+		-E misspell \
+		-E wsl \
+		./...
+
 .PHONY: run-for-local
 run-for-local: build
 	./server

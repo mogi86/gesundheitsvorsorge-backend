@@ -3,13 +3,13 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"strconv"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate"
 	"github.com/golang-migrate/migrate/database/mysql"
 	_ "github.com/golang-migrate/migrate/source/file"
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -51,7 +51,6 @@ func main() {
 		return
 	}
 
-	// Step はversionではない。例えばstep=1を指定した場合マイグレーションバージョンが1つ上がる。downはその逆です。
 	// MEMO: Step isn't version.
 	//       For example, if you specify step=1, the migration version goes up by 1, and vice versa for down.
 	//err = m.Steps(intVersion)

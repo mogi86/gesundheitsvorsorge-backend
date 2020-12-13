@@ -22,6 +22,7 @@ func (s *Controller) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	response := s.usecase.Sample()
 
 	w.Header().Set("Content-Type", "application/json")
+
 	_, err := fmt.Fprintf(w, response)
 	if err != nil {
 		logrus.Errorf("return response failed. %v\n", err)
