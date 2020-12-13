@@ -1,0 +1,24 @@
+@startuml
+left to right direction
+
+object User
+User : id
+User : password
+User : first_name
+User : last_name
+User : mail
+User : sex
+User : birthday
+User : weight
+User : height   
+User : status
+
+object TemporaryRegistration
+TemporaryRegistration : id
+TemporaryRegistration : user_id
+TemporaryRegistration : token
+TemporaryRegistration : expire_date
+
+User "1"--"1..*" TemporaryRegistration
+
+@enduml
