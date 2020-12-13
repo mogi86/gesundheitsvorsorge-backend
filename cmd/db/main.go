@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strconv"
+	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate"
@@ -57,7 +58,14 @@ func main() {
 
 	err = m.Up()
 	if err != nil {
+		if strings.Contains(err.Error(), "no change") {
+			logrus.Info("no change migration")
+			return
+		}
+
 		logrus.Errorf("migration failed: %+v", err)
 		return
 	}
+
+	logrus.Info("migration finish")
 }

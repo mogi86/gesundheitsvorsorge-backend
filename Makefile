@@ -26,6 +26,7 @@ run-for-local: build
 run: build
 	docker-compose build
 	docker-compose up -d
+	make migration
 
 .PHONY: stop
 stop:
