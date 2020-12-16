@@ -10,7 +10,6 @@ fmt:
 lint:
 	golangci-lint run --disable-all \
 		-E govet \
-		-E unused \
 		-E gocyclo \
 		-E gofmt \
 		-E goimports \

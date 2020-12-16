@@ -25,7 +25,7 @@ func NewUserUseCase(r repository.User) *User {
 func (u *User) GetUserById(id uint64) *model.User {
 	user, err := u.repository.FindById(id)
 	if err != nil {
-		logrus.Errorf("couldn't find user: %w", err)
+		logrus.Errorf("couldn't find user: %+v\n", err)
 	}
 
 	return user

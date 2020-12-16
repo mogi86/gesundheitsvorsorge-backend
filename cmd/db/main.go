@@ -64,6 +64,7 @@ func main() {
 		}
 
 		logrus.Errorf("migration failed: %+v", err)
+
 		return
 	}
 

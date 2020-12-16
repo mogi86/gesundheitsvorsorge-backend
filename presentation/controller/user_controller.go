@@ -32,7 +32,7 @@ func (u *UserController) FindByID(w http.ResponseWriter, r *http.Request) {
 
 	_, err = fmt.Fprintf(w, string(b))
 	if err != nil {
-		logrus.Errorf("return response failed. %v\n", err)
+		logrus.Errorf("return response failed. %+v\n", err)
 	}
 }
 
