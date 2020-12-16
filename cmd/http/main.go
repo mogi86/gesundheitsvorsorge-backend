@@ -37,18 +37,20 @@ func main() {
 		DB: db,
 	}
 
+	// see: https://golang.org/pkg/net/http/#ServeMux
+	//   ServeMux is an HTTP request multiplexer
+	mux := http.NewServeMux()
+
 	// user
 	userUseCase := usecase.NewUserUseCase(dbClient)
 	userCont := controller.NewUserController(userUseCase)
-	http.Handle("/user", userCont)
-
-	// sample
-	cont := controller.NewController(&usecase.UseCase{})
-	http.Handle("/", cont)
+	//http.Handle("/user", userCont)
+	mux.HandleFunc("/user/get", userCont.FindByID)
+	mux.HandleFunc("/user/create", userCont.Create)
 
 	logrus.Infof("build server...")
 
-	err := http.ListenAndServe(":8000", nil)
+	err := http.ListenAndServe(":8000", mux)
 	if err != nil {
 		logrus.Errorf("build server failed. %+v\n", err)
 	}
