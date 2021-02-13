@@ -11,7 +11,7 @@ User : sex
 User : birthday
 User : weight
 User : height   
-User : status
+User : is_temporary_status
 
 object TemporaryRegistration
 TemporaryRegistration : id
@@ -19,6 +19,15 @@ TemporaryRegistration : user_id
 TemporaryRegistration : token
 TemporaryRegistration : expire_date
 
-User "1"--"1..*" TemporaryRegistration
+User "1"*--"0..1" TemporaryRegistration
+
+'Note for User
+note bottom of User : is_temporary_status should be \ninitialized when "true" \nis_temporary_status will be "false" \nwhen over Temporary account
+
+'Note for TemporaryRegistration
+note top of TemporaryRegistration : This model should be 0 \n when User.is_temporary_status = false
+note bottom of TemporaryRegistration : expire_date is 1day
+note bottom of TemporaryRegistration : token is 32 Strings
+note bottom of TemporaryRegistration : token and expire_date will be updated \nwhen user retry temporary registration
 
 @enduml
