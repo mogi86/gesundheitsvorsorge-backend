@@ -32,5 +32,10 @@ func (u *User) GetUserById(id uint64) *model.User {
 }
 
 func (u *User) CreateUser(user *model.User) *model.User {
+	user, err := u.repository.Create(user)
+	if err != nil {
+		logrus.Errorf("failed persist user model: %+v\n", err)
+	}
+
 	return user
 }
