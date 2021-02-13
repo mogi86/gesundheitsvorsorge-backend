@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/mogi86/gesundheitsvorsorge-backend/application/helper"
 	"github.com/mogi86/gesundheitsvorsorge-backend/presentation/request"
 	"net/http"
 	"strconv"
@@ -67,7 +68,7 @@ func (u *UserController) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user := &model.User{
-		Password:  ur.Password,
+		Password:  helper.ConvertToHash(ur.Password),
 		FirstName: ur.FirstName,
 		LastName:  ur.LastName,
 		Mail:      ur.Mail,
