@@ -108,6 +108,10 @@ func (u *UserController) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	b, err := json.Marshal(res)
+	if err != nil {
+		logrus.Errorf("json marshal failed. %v\n", err)
+		http.Error(w, fmt.Sprintf("HTTP Request failed...") , 500)
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 
