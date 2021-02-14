@@ -40,15 +40,15 @@ func (u *UserController) FindByID(w http.ResponseWriter, r *http.Request) {
 }
 
 func (u *UserController) Create(w http.ResponseWriter, r *http.Request) {
-	var ur request.User
+	var ruc request.UserCreate
 
-	err := json.NewDecoder(r.Body).Decode(&ur)
+	err := json.NewDecoder(r.Body).Decode(&ruc)
 	if err != nil {
 		logrus.Errorf("NewDecoder failed. %v\n", err)
 		return
 	}
 
-	birthday, err := time.Parse("2006-01-02", ur.Birthday)
+	birthday, err := time.Parse("2006-01-02", ruc.Birthday)
 	if err != nil {
 		logrus.Errorf(
 			"parse birthday(%v) failed. %v\n",
@@ -57,22 +57,22 @@ func (u *UserController) Create(w http.ResponseWriter, r *http.Request) {
 		)
 	}
 
-	weight, err := strconv.ParseFloat(ur.Weight, 32)
+	weight, err := strconv.ParseFloat(ruc.Weight, 32)
 	if err != nil {
 		logrus.Errorf("parse weight failed. %v\n", err)
 	}
 
-	height, err := strconv.ParseFloat(ur.Height, 32)
+	height, err := strconv.ParseFloat(ruc.Height, 32)
 	if err != nil {
 		logrus.Errorf("parse height failed. %v\n", err)
 	}
 
 	user := &model.User{
-		Password:  helper.ConvertToHash(ur.Password),
-		FirstName: ur.FirstName,
-		LastName:  ur.LastName,
-		Mail:      ur.Mail,
-		Sex:       ur.Sex,
+		Password:  helper.ConvertToHash(ruc.Password),
+		FirstName: ruc.FirstName,
+		LastName:  ruc.LastName,
+		Mail:      ruc.Mail,
+		Sex:       ruc.Sex,
 		Birthday:  birthday,
 		Weight:    weight,
 		Height:    height,
