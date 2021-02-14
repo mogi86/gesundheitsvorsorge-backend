@@ -32,7 +32,30 @@ func (u *UserController) FindByID(w http.ResponseWriter, r *http.Request) {
 
 	id, _ := strconv.ParseUint(idStr, 10, 64)
 	user := u.usecase.GetUserById(id)
-	b, err := json.Marshal(user)
+
+	res := &response.User{
+		ID:        user.ID,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Mail:      user.Mail,
+		Sex:       user.Sex,
+		Birthday:  response.CustomDate(user.Birthday),
+		Weight:    user.Weight,
+		Height:    user.Height,
+		Status:    user.Status,
+		CreatedAt: response.CustomDateTime(user.CreatedAt),
+		UpdatedAt: response.CustomDateTime(user.UpdatedAt),
+		TemporaryRegistration: &response.TemporaryRegistration{
+			ID:        user.TemporaryRegistration.ID,
+			UserID:    user.TemporaryRegistration.UserID,
+			Token:     user.TemporaryRegistration.Token,
+			ExpireAt:  response.CustomDateTime(user.TemporaryRegistration.ExpireAt),
+			CreatedAt: response.CustomDateTime(user.TemporaryRegistration.CreatedAt),
+			UpdatedAt: response.CustomDateTime(user.TemporaryRegistration.UpdatedAt),
+		},
+	}
+
+	b, err := json.Marshal(res)
 
 	w.Header().Set("Content-Type", "application/json")
 
@@ -87,7 +110,7 @@ func (u *UserController) Create(w http.ResponseWriter, r *http.Request) {
 
 	user = u.usecase.CreateUser(user)
 
-	res := &response.UserCreate{
+	res := &response.User{
 		ID:        user.ID,
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
