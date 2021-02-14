@@ -6,7 +6,13 @@
 $ make run
 ```
 
-- Request
+- Request for Get User
+
+```bash
+$ curl -v GET "http://localhost:8000/user/get?id=3"
+```
+
+- Request for Create User
 
 ```bash
 $ curl -v POST "http://localhost:8000/user/create" \

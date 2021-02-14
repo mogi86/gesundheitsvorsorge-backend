@@ -28,6 +28,8 @@ func NewUserController(userUseCase usecase.UserInterface) *UserController {
 
 func (u *UserController) FindByID(w http.ResponseWriter, r *http.Request) {
 	idStr := r.URL.Query().Get("id")
+	logrus.Infof("id: %v\n", idStr)
+
 	id, _ := strconv.ParseUint(idStr, 10, 64)
 	user := u.usecase.GetUserById(id)
 	b, err := json.Marshal(user)

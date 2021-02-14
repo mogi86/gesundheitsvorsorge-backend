@@ -26,7 +26,7 @@ func init() {
 	DBName := "gesundheitsvorsorge_db"
 	host := "gesundheitsvorsorge-backend_db_1"
 	port := "3306"
-	dns := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", user, pass, host, port, DBName)
+	dns := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", user, pass, host, port, DBName)
 
 	db, err = sql.Open("mysql", dns)
 	if err != nil {

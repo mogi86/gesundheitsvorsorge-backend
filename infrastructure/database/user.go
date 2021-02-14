@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"github.com/sirupsen/logrus"
+	"time"
 
 	"github.com/mogi86/gesundheitsvorsorge-backend/domain/model"
 )
@@ -11,9 +12,113 @@ type DBClient struct {
 	DB *sql.DB
 }
 
+type UserDto struct {
+	ID                       uint64    `db:"id"`
+	Password                 string    `db:"password"`
+	FirstName                string    `db:"first_name"`
+	LastName                 string    `db:"last_name"`
+	Mail                     string    `db:"mail"`
+	Sex                      string    `db:"sex"`
+	Birthday                 time.Time `db:"birthday"`
+	Weight                   float64   `db:"weight"`
+	Height                   float64   `db:"height"`
+	Status                   bool      `db:"status"`
+	CreatedAt                time.Time `db:"created_at"`
+	UpdatedAt                time.Time `db:"updated_at"`
+	TemporaryRegistrationDto *TemporaryRegistrationDto
+}
+
+type TemporaryRegistrationDto struct {
+	ID        uint64    `db:"temp_id"`
+	UserID    uint64    `db:"temp_user_id"`
+	Token     string    `db:"temp_token"`
+	ExpireAt  time.Time `db:"temp_expire_at"`
+	CreatedAt time.Time `db:"temp_created_at"`
+	UpdatedAt time.Time `db:"temp_updated_at"`
+}
+
 // FindById return specified 1 user
 func (d *DBClient) FindById(id uint64) (*model.User, error) {
-	return &model.User{}, nil
+	sel := `
+SELECT
+	u.id,
+	u.password,
+	u.first_name,
+	u.last_name,
+	u.mail,
+	u.sex,
+	u.birthday,
+	u.height,
+	u.weight,
+	u.status,
+	u.created_at,
+	u.updated_at,
+	tr.id AS temp_id,
+	tr.user_id AS temp_user_id,
+	tr.token AS temp_token,
+	tr.expire_date AS temp_expire_at,
+	tr.created_at AS temp_created_at,
+	tr.updated_at AS temp_updated_at
+FROM
+	users u,
+	temporary_registrations tr
+WHERE
+	u.id = tr.user_id
+AND
+	u.id = ?
+`
+
+	stmt, err := d.DB.Prepare(sel)
+	if err != nil {
+		logrus.Errorf("failed prepare statement. %+v\n", err)
+	}
+
+	var user UserDto
+	var temp TemporaryRegistrationDto
+
+	err = stmt.QueryRow(id).Scan(
+		&user.ID,
+		&user.Password,
+		&user.FirstName,
+		&user.LastName,
+		&user.Mail,
+		&user.Sex,
+		&user.Birthday,
+		&user.Weight,
+		&user.Height,
+		&user.Status,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+		&temp.ID,
+		&temp.UserID,
+		&temp.Token,
+		&temp.ExpireAt,
+		&temp.CreatedAt,
+		&temp.UpdatedAt,
+	)
+
+	return &model.User{
+		ID:                    user.ID,
+		Password:              user.Password,
+		FirstName:             user.FirstName,
+		LastName:              user.LastName,
+		Mail:                  user.Mail,
+		Sex:                   user.Sex,
+		Birthday:              user.Birthday,
+		Weight:                user.Weight,
+		Height:                user.Height,
+		Status:                user.Status,
+		CreatedAt:             user.CreatedAt,
+		UpdatedAt:             user.UpdatedAt,
+		TemporaryRegistration: &model.TemporaryRegistration{
+			ID:        temp.ID,
+			UserID:    temp.UserID,
+			Token:     temp.Token,
+			ExpireAt:  temp.ExpireAt,
+			CreatedAt: temp.CreatedAt,
+			UpdatedAt: temp.UpdatedAt,
+		},
+	}, nil
 }
 
 // Create create new user
