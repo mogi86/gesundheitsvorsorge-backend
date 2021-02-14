@@ -62,16 +62,50 @@ INSERT INTO users (
 		logrus.Errorf("failed execute insert operation. %+v\n", err)
 	}
 
-	err = tx.Commit()
-	if err != nil {
-		logrus.Errorf("failed commit transaction. %+v\n", err)
-	}
-
 	lastID, err := result.LastInsertId()
 	if err != nil {
 		logrus.Errorf("failed get last inserted id. %+v\n", err)
 	}
 	m.ID = uint64(lastID)
+
+	insTemp := `
+INSERT INTO temporary_registrations (
+	user_id,
+	token,
+	expire_date,
+	created_at,
+	updated_at
+) VALUES (
+	?, ?, ?, ?, ?
+)
+`
+
+	stmtTemp, err := d.DB.Prepare(insTemp)
+	if err != nil {
+		logrus.Errorf("failed prepare statement for temporary_registrations. %+v\n", err)
+	}
+
+	resultTemp, err := stmtTemp.Exec(
+		m.ID,
+		m.TemporaryRegistrations.Token,
+		m.TemporaryRegistrations.ExpireAt,
+		m.TemporaryRegistrations.CreatedAt,
+		m.TemporaryRegistrations.UpdatedAt,
+	)
+	if err != nil {
+		logrus.Errorf("failed execute insert operation. %+v\n", err)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		logrus.Errorf("failed commit transaction. %+v\n", err)
+	}
+
+	lastIDTemp, err := resultTemp.LastInsertId()
+	if err != nil {
+		logrus.Errorf("failed get last inserted id for temporary_registrations. %+v\n", err)
+	}
+	m.TemporaryRegistrations.ID = uint64(lastIDTemp)
 
 	return m, nil
 }
