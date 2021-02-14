@@ -45,7 +45,7 @@ INSERT INTO users (
 		logrus.Errorf("failed prepare statement. %+v\n", err)
 	}
 
-	_, err = stmt.Exec(
+	result, err := stmt.Exec(
 		m.Password,
 		m.FirstName,
 		m.LastName,
@@ -66,6 +66,12 @@ INSERT INTO users (
 	if err != nil {
 		logrus.Errorf("failed commit transaction. %+v\n", err)
 	}
+
+	lastID, err := result.LastInsertId()
+	if err != nil {
+		logrus.Errorf("failed get last inserted id. %+v\n", err)
+	}
+	m.ID = uint64(lastID)
 
 	return m, nil
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/mogi86/gesundheitsvorsorge-backend/application/helper"
 	"github.com/mogi86/gesundheitsvorsorge-backend/presentation/request"
+	"github.com/mogi86/gesundheitsvorsorge-backend/presentation/response"
 	"net/http"
 	"strconv"
 	"time"
@@ -82,7 +83,22 @@ func (u *UserController) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user = u.usecase.CreateUser(user)
-	b, err := json.Marshal(user)
+
+	res := &response.UserCreate{
+		ID:        user.ID,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Mail:      user.Mail,
+		Sex:       user.Sex,
+		Birthday:  user.Birthday,
+		Weight:    user.Weight,
+		Height:    user.Height,
+		Status:    user.Status,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	}
+
+	b, err := json.Marshal(res)
 
 	w.Header().Set("Content-Type", "application/json")
 
