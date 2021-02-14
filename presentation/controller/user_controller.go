@@ -69,18 +69,18 @@ func (u *UserController) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user := &model.User{
-		Password:               helper.ConvertToHash(ruc.Password),
-		FirstName:              ruc.FirstName,
-		LastName:               ruc.LastName,
-		Mail:                   ruc.Mail,
-		Sex:                    ruc.Sex,
-		Birthday:               birthday,
-		Weight:                 weight,
-		Height:                 height,
-		Status:                 false,
-		CreatedAt:              time.Now(),
-		UpdatedAt:              time.Now(),
-		TemporaryRegistrations: model.NewTemporaryRegistration(),
+		Password:              helper.ConvertToHash(ruc.Password),
+		FirstName:             ruc.FirstName,
+		LastName:              ruc.LastName,
+		Mail:                  ruc.Mail,
+		Sex:                   ruc.Sex,
+		Birthday:              birthday,
+		Weight:                weight,
+		Height:                height,
+		Status:                false,
+		CreatedAt:             time.Now(),
+		UpdatedAt:             time.Now(),
+		TemporaryRegistration: model.NewTemporaryRegistration(),
 	}
 
 	user = u.usecase.CreateUser(user)
@@ -97,13 +97,13 @@ func (u *UserController) Create(w http.ResponseWriter, r *http.Request) {
 		Status:    user.Status,
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,
-		TemporaryRegistrations: &response.TemporaryRegistration{
-			ID:        user.TemporaryRegistrations.ID,
-			UserID:    user.TemporaryRegistrations.UserID,
-			Token:     user.TemporaryRegistrations.Token,
-			ExpireAt:  user.TemporaryRegistrations.ExpireAt,
-			CreatedAt: user.TemporaryRegistrations.CreatedAt,
-			UpdatedAt: user.TemporaryRegistrations.UpdatedAt,
+		TemporaryRegistration: &response.TemporaryRegistration{
+			ID:        user.TemporaryRegistration.ID,
+			UserID:    user.TemporaryRegistration.UserID,
+			Token:     user.TemporaryRegistration.Token,
+			ExpireAt:  user.TemporaryRegistration.ExpireAt,
+			CreatedAt: user.TemporaryRegistration.CreatedAt,
+			UpdatedAt: user.TemporaryRegistration.UpdatedAt,
 		},
 	}
 

@@ -87,10 +87,10 @@ INSERT INTO temporary_registrations (
 
 	resultTemp, err := stmtTemp.Exec(
 		m.ID,
-		m.TemporaryRegistrations.Token,
-		m.TemporaryRegistrations.ExpireAt,
-		m.TemporaryRegistrations.CreatedAt,
-		m.TemporaryRegistrations.UpdatedAt,
+		m.TemporaryRegistration.Token,
+		m.TemporaryRegistration.ExpireAt,
+		m.TemporaryRegistration.CreatedAt,
+		m.TemporaryRegistration.UpdatedAt,
 	)
 	if err != nil {
 		logrus.Errorf("failed execute insert operation. %+v\n", err)
@@ -105,7 +105,7 @@ INSERT INTO temporary_registrations (
 	if err != nil {
 		logrus.Errorf("failed get last inserted id for temporary_registrations. %+v\n", err)
 	}
-	m.TemporaryRegistrations.ID = uint64(lastIDTemp)
+	m.TemporaryRegistration.ID = uint64(lastIDTemp)
 
 	return m, nil
 }
