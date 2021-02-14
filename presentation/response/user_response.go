@@ -1,6 +1,9 @@
 package response
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 type UserCreate struct {
 	ID                    uint64                 `json:"id"`
@@ -8,20 +11,34 @@ type UserCreate struct {
 	LastName              string                 `json:"last_name"`
 	Mail                  string                 `json:"mail"`
 	Sex                   string                 `json:"sex"`
-	Birthday              time.Time              `json:"birthday"`
+	Birthday              CustomDate             `json:"birthday"`
 	Weight                float64                `json:"weight"`
 	Height                float64                `json:"height"`
 	Status                bool                   `json:"status"`
-	CreatedAt             time.Time              `json:"created_at"`
-	UpdatedAt             time.Time              `json:"updated_at"`
+	CreatedAt             CustomDateTime         `json:"created_at"`
+	UpdatedAt             CustomDateTime         `json:"updated_at"`
 	TemporaryRegistration *TemporaryRegistration `json:"temporary_registrations"`
 }
 
 type TemporaryRegistration struct {
-	ID        uint64    `json:"id"`
-	UserID    uint64    `json:"user_id"`
-	Token     string    `json:"token"`
-	ExpireAt  time.Time `json:"expire_at"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID        uint64         `json:"id"`
+	UserID    uint64         `json:"user_id"`
+	Token     string         `json:"token"`
+	ExpireAt  CustomDateTime `json:"expire_at"`
+	CreatedAt CustomDateTime `json:"created_at"`
+	UpdatedAt CustomDateTime `json:"updated_at"`
+}
+
+type CustomDate time.Time
+
+func (c *CustomDate) MarshalJSON() ([]byte, error) {
+	formatted := time.Time(*c).Format("2006-01-02")
+	return json.Marshal(formatted)
+}
+
+type CustomDateTime time.Time
+
+func (c *CustomDateTime) MarshalJSON() ([]byte, error) {
+	formatted := time.Time(*c).Format("2006-01-02 15:04:05")
+	return json.Marshal(formatted)
 }

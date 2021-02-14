@@ -91,26 +91,26 @@ func (u *UserController) Create(w http.ResponseWriter, r *http.Request) {
 		LastName:  user.LastName,
 		Mail:      user.Mail,
 		Sex:       user.Sex,
-		Birthday:  user.Birthday,
+		Birthday:  response.CustomDate(user.Birthday),
 		Weight:    user.Weight,
 		Height:    user.Height,
 		Status:    user.Status,
-		CreatedAt: user.CreatedAt,
-		UpdatedAt: user.UpdatedAt,
+		CreatedAt: response.CustomDateTime(user.CreatedAt),
+		UpdatedAt: response.CustomDateTime(user.UpdatedAt),
 		TemporaryRegistration: &response.TemporaryRegistration{
 			ID:        user.TemporaryRegistration.ID,
 			UserID:    user.TemporaryRegistration.UserID,
 			Token:     user.TemporaryRegistration.Token,
-			ExpireAt:  user.TemporaryRegistration.ExpireAt,
-			CreatedAt: user.TemporaryRegistration.CreatedAt,
-			UpdatedAt: user.TemporaryRegistration.UpdatedAt,
+			ExpireAt:  response.CustomDateTime(user.TemporaryRegistration.ExpireAt),
+			CreatedAt: response.CustomDateTime(user.TemporaryRegistration.CreatedAt),
+			UpdatedAt: response.CustomDateTime(user.TemporaryRegistration.UpdatedAt),
 		},
 	}
 
 	b, err := json.Marshal(res)
 	if err != nil {
 		logrus.Errorf("json marshal failed. %v\n", err)
-		http.Error(w, fmt.Sprintf("HTTP Request failed...") , 500)
+		http.Error(w, fmt.Sprintf("HTTP Request failed..."), 500)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
