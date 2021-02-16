@@ -71,7 +71,7 @@ func (u *UserController) Create(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&ruc)
 	if err != nil {
 		logrus.Errorf("NewDecoder failed. %v\n", err)
-		return
+		http.Error(w, fmt.Sprintf("Bad Request..."), http.StatusBadRequest)
 	}
 
 	birthday, err := time.Parse("2006-01-02", ruc.Birthday)
@@ -81,16 +81,19 @@ func (u *UserController) Create(w http.ResponseWriter, r *http.Request) {
 			r.PostFormValue("birthday"),
 			err,
 		)
+		http.Error(w, fmt.Sprintf("Bad Request..."), http.StatusBadRequest)
 	}
 
 	weight, err := strconv.ParseFloat(ruc.Weight, 32)
 	if err != nil {
 		logrus.Errorf("parse weight failed. %v\n", err)
+		http.Error(w, fmt.Sprintf("Bad Request..."), http.StatusBadRequest)
 	}
 
 	height, err := strconv.ParseFloat(ruc.Height, 32)
 	if err != nil {
 		logrus.Errorf("parse height failed. %v\n", err)
+		http.Error(w, fmt.Sprintf("Bad Request..."), http.StatusBadRequest)
 	}
 
 	user := &model.User{
@@ -135,7 +138,7 @@ func (u *UserController) Create(w http.ResponseWriter, r *http.Request) {
 	b, err := json.Marshal(res)
 	if err != nil {
 		logrus.Errorf("json marshal failed. %v\n", err)
-		http.Error(w, fmt.Sprintf("HTTP Request failed..."), 500)
+		http.Error(w, fmt.Sprintf("HTTP Request failed..."), http.StatusInternalServerError)
 	}
 
 	w.Header().Set("Content-Type", "application/json")

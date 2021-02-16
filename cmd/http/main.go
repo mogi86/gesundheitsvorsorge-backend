@@ -21,11 +21,14 @@ var (
 )
 
 func init() {
+	// TODO: use env values
 	user := "gesundheitsvorsorge"
 	pass := "gesundheitsvorsorge"
 	DBName := "gesundheitsvorsorge_db"
 	host := "gesundheitsvorsorge-backend_db_1"
 	port := "3306"
+
+	//see: https://github.com/go-sql-driver/mysql#parsetime
 	dns := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", user, pass, host, port, DBName)
 
 	db, err = sql.Open("mysql", dns)
