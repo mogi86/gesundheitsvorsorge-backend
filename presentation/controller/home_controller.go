@@ -10,7 +10,7 @@ import (
 	"github.com/mogi86/gesundheitsvorsorge-backend/application/auth"
 )
 
-type HomeController struct {}
+type HomeController struct{}
 
 type Response struct {
 	Message string

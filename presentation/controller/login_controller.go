@@ -11,7 +11,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type LoginController struct {}
+type LoginController struct{}
 
 type Jwt struct {
 	Token string `json:"token"`
