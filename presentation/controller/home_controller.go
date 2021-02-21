@@ -6,8 +6,6 @@ import (
 	"net/http"
 
 	"github.com/sirupsen/logrus"
-
-	"github.com/mogi86/gesundheitsvorsorge-backend/application/auth"
 )
 
 type HomeController struct{}
@@ -21,20 +19,6 @@ func NewHomeController() *HomeController {
 }
 
 func (h *HomeController) Index(w http.ResponseWriter, r *http.Request) {
-	token, err := auth.GetParsedToken(r)
-
-	if err != nil {
-		logrus.Errorf("failed to parse token. %v", err)
-		http.Error(w, fmt.Sprintf("HTTP Request failed..."), http.StatusInternalServerError)
-		return
-	}
-
-	if token == nil || !token.Valid {
-		logrus.Errorf("token is invalid.")
-		http.Error(w, fmt.Sprintf("HTTP Request failed..."), http.StatusUnauthorized)
-		return
-	}
-
 	b, err := json.Marshal(Response{
 		Message: "logged in",
 	})

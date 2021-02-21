@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/mogi86/gesundheitsvorsorge-backend/presentation/middleware"
 	"net/http"
 	"time"
 
@@ -57,12 +58,14 @@ func main() {
 	// User
 	userUseCase := usecase.NewUserUseCase(dbClient)
 	userCont := controller.NewUserController(userUseCase)
-	mux.HandleFunc("/user/get", userCont.FindByID)
-	mux.HandleFunc("/user/create", userCont.Create)
+	mux.Handle("/user/get", http.HandlerFunc(userCont.FindByID))
+	mux.Handle("/user/create", http.HandlerFunc(userCont.Create))
 	// Login
-	mux.HandleFunc("/login", controller.NewLoginController().Login)
+	mux.Handle("/login", http.HandlerFunc(controller.NewLoginController().Login))
 	// Home
-	mux.HandleFunc("/home/index", controller.NewHomeController().Index)
+	mux.Handle("/home/index", middleware.Login(
+		http.HandlerFunc(controller.NewHomeController().Index)),
+	)
 
 	logrus.Infof("build server...")
 
