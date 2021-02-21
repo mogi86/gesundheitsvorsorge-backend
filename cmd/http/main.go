@@ -54,12 +54,15 @@ func main() {
 	//   ServeMux is an HTTP request multiplexer
 	mux := http.NewServeMux()
 
-	// user
+	// User
 	userUseCase := usecase.NewUserUseCase(dbClient)
 	userCont := controller.NewUserController(userUseCase)
-	//http.Handle("/user", userCont)
 	mux.HandleFunc("/user/get", userCont.FindByID)
 	mux.HandleFunc("/user/create", userCont.Create)
+	// Login
+	mux.HandleFunc("/login", controller.NewLoginController().Login)
+	// Home
+	mux.HandleFunc("/home/index", controller.NewHomeController().Index)
 
 	logrus.Infof("build server...")
 

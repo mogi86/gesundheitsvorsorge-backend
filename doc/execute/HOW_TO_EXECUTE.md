@@ -6,12 +6,6 @@
 $ make run
 ```
 
-- Request for Get User
-
-```bash
-$ curl -v GET "http://localhost:8000/user/get?id=3"
-```
-
 - Request for Create User
 
 ```bash
@@ -27,4 +21,23 @@ $ curl -v POST "http://localhost:8000/user/create" \
         "weight": "60.0",
         "height": "170.0"
     }'
+```
+
+- Request for Get User
+
+```bash
+$ curl -v GET "http://localhost:8000/user/get?id=3"
+```
+
+- Request for Login
+
+```bash
+$ curl -v GET "http://localhost:8000/login"
+```
+
+- Request for Home Index
+
+```bash
+$ curl -v GET "http://localhost:8000/home/index" \
+    -H "Authorization: Bearer your-token"
 ```

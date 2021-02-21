@@ -11,6 +11,13 @@
 
 ## Usage
 
+- create key for JWT
+
+```bash
+$ openssl genrsa 4096 > private.key
+$ openssl rsa -pubout < private.key > public.key
+```
+
 - test
 
 ```bash
@@ -24,10 +31,7 @@ $ make run
 ```
 
 - call api (need to use other terminal session)
-
-```bash
-$ curl -v -X GET "http://localhost:8000"
-```
+    - see: [HOW_TO_EXECUTE](./doc/execute/HOW_TO_EXECUTE.md)
 
 - stop
 

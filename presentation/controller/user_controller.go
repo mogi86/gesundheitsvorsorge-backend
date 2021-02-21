@@ -28,7 +28,7 @@ func NewUserController(userUseCase usecase.UserInterface) *UserController {
 
 func (u *UserController) FindByID(w http.ResponseWriter, r *http.Request) {
 	idStr := r.URL.Query().Get("id")
-	logrus.Infof("id: %v\n", idStr)
+	logrus.Infof("id: %v", idStr)
 
 	id, _ := strconv.ParseUint(idStr, 10, 64)
 	user := u.usecase.GetUserById(id)
@@ -70,30 +70,34 @@ func (u *UserController) Create(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&ruc)
 	if err != nil {
-		logrus.Errorf("NewDecoder failed. %v\n", err)
+		logrus.Errorf("NewDecoder failed. %v", err)
 		http.Error(w, fmt.Sprintf("Bad Request..."), http.StatusBadRequest)
+		return
 	}
 
 	birthday, err := time.Parse("2006-01-02", ruc.Birthday)
 	if err != nil {
 		logrus.Errorf(
-			"parse birthday(%v) failed. %v\n",
+			"parse birthday(%v) failed. %v",
 			r.PostFormValue("birthday"),
 			err,
 		)
 		http.Error(w, fmt.Sprintf("Bad Request..."), http.StatusBadRequest)
+		return
 	}
 
 	weight, err := strconv.ParseFloat(ruc.Weight, 32)
 	if err != nil {
-		logrus.Errorf("parse weight failed. %v\n", err)
+		logrus.Errorf("parse weight failed. %v", err)
 		http.Error(w, fmt.Sprintf("Bad Request..."), http.StatusBadRequest)
+		return
 	}
 
 	height, err := strconv.ParseFloat(ruc.Height, 32)
 	if err != nil {
-		logrus.Errorf("parse height failed. %v\n", err)
+		logrus.Errorf("parse height failed. %v", err)
 		http.Error(w, fmt.Sprintf("Bad Request..."), http.StatusBadRequest)
+		return
 	}
 
 	user := &model.User{
@@ -137,14 +141,15 @@ func (u *UserController) Create(w http.ResponseWriter, r *http.Request) {
 
 	b, err := json.Marshal(res)
 	if err != nil {
-		logrus.Errorf("json marshal failed. %v\n", err)
+		logrus.Errorf("json marshal failed. %v", err)
 		http.Error(w, fmt.Sprintf("HTTP Request failed..."), http.StatusInternalServerError)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 
 	_, err = fmt.Fprintf(w, string(b))
 	if err != nil {
-		logrus.Errorf("return response failed. %v\n", err)
+		logrus.Errorf("return response failed. %v", err)
 	}
 }

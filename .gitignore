@@ -3,3 +3,6 @@ server
 .idea/
 migration
 *sample.puml
+public.key
+secret.key
+private.key
