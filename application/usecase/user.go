@@ -12,7 +12,7 @@ import (
 type UserInterface interface {
 	GetUserById(id uint64) (*model.User, error)
 	CreateUser(user *model.User) (*model.User, error)
-	Login(mail, password string) error
+	Login(mail, password string) (*model.User, error)
 }
 
 type User struct {
@@ -45,17 +45,17 @@ func (u *User) CreateUser(user *model.User) (*model.User, error) {
 	return user, nil
 }
 
-func (u *User) Login(mail, password string) error {
+func (u *User) Login(mail, password string) (*model.User, error) {
 	user, err := u.repository.FindByMail(mail)
 	if err != nil {
 		logrus.Errorf("failed to get user model. %+v", err)
-		return xerrors.Errorf("failed to get user model: %w", err)
+		return nil, xerrors.Errorf("failed to get user model: %w", err)
 	}
 
 	if helper.ConvertToHash(password) != user.Password {
 		logrus.Errorf("invalid password. %+v", err)
-		return xerrors.Errorf("invalid password: %w", err)
+		return nil, xerrors.Errorf("invalid password: %w", err)
 	}
 
-	return nil
+	return user, nil
 }

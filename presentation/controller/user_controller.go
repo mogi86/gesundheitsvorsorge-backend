@@ -19,7 +19,8 @@ import (
 )
 
 type Jwt struct {
-	Token string `json:"token"`
+	UserID uint64 `json:"id"`
+	Token  string `json:"token"`
 }
 
 type UserController struct {
@@ -181,7 +182,7 @@ func (u *UserController) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// user login
-	err = u.usecase.Login(login.Mail, login.Password)
+	user, err := u.usecase.Login(login.Mail, login.Password)
 	if err != nil {
 		logrus.Errorf("failed to login. %v", err)
 		http.Error(w, fmt.Sprintf("Bad Request..."), http.StatusUnauthorized)
@@ -198,8 +199,7 @@ func (u *UserController) Login(w http.ResponseWriter, r *http.Request) {
 	token := jwt.NewWithClaims(
 		jwt.SigningMethodRS256,
 		jwt.MapClaims{
-			// TODO: set user_id which is got from datastore
-			"user_id": 1,
+			"user_id": user.ID,
 			// TODO: can be get expire from such as config file
 			"exp": time.Now().Add(time.Hour * 24).Unix(),
 		},
@@ -214,7 +214,8 @@ func (u *UserController) Login(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	j := &Jwt{
-		Token: tokenStr,
+		UserID: user.ID,
+		Token:  tokenStr,
 	}
 	b, err := json.Marshal(j)
 
