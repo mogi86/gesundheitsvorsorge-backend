@@ -61,7 +61,7 @@ func main() {
 	mux.Handle("/user/get", http.HandlerFunc(userCont.FindByID))
 	mux.Handle("/user/create", http.HandlerFunc(userCont.Create))
 	// Login
-	mux.Handle("/login", http.HandlerFunc(controller.NewLoginController().Login))
+	mux.Handle("/login", http.HandlerFunc(userCont.Login))
 	// Home
 	mux.Handle("/home/index", middleware.Login(
 		http.HandlerFunc(controller.NewHomeController().Index)),

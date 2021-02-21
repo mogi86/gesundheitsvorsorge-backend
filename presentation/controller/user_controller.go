@@ -3,9 +3,11 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/mogi86/gesundheitsvorsorge-backend/application/helper"
 	"github.com/mogi86/gesundheitsvorsorge-backend/presentation/request"
 	"github.com/mogi86/gesundheitsvorsorge-backend/presentation/response"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
@@ -15,6 +17,10 @@ import (
 	"github.com/mogi86/gesundheitsvorsorge-backend/application/usecase"
 	"github.com/mogi86/gesundheitsvorsorge-backend/domain/model"
 )
+
+type Jwt struct {
+	Token string `json:"token"`
+}
 
 type UserController struct {
 	usecase usecase.UserInterface
@@ -31,7 +37,12 @@ func (u *UserController) FindByID(w http.ResponseWriter, r *http.Request) {
 	logrus.Infof("id: %v", idStr)
 
 	id, _ := strconv.ParseUint(idStr, 10, 64)
-	user := u.usecase.GetUserById(id)
+	user, err := u.usecase.GetUserById(id)
+	if err != nil {
+		logrus.Errorf("failed to get user. %v", err)
+		http.Error(w, fmt.Sprintf("Bad Request..."), http.StatusBadRequest)
+		return
+	}
 
 	res := &response.User{
 		ID:        user.ID,
@@ -115,7 +126,12 @@ func (u *UserController) Create(w http.ResponseWriter, r *http.Request) {
 		TemporaryRegistration: model.NewTemporaryRegistration(),
 	}
 
-	user = u.usecase.CreateUser(user)
+	user, err = u.usecase.CreateUser(user)
+	if err != nil {
+		logrus.Errorf("parse height failed. %v", err)
+		http.Error(w, fmt.Sprintf("Bad Request..."), http.StatusBadRequest)
+		return
+	}
 
 	res := &response.User{
 		ID:        user.ID,
@@ -151,5 +167,59 @@ func (u *UserController) Create(w http.ResponseWriter, r *http.Request) {
 	_, err = fmt.Fprintf(w, string(b))
 	if err != nil {
 		logrus.Errorf("return response failed. %v", err)
+	}
+}
+
+func (u *UserController) Login(w http.ResponseWriter, r *http.Request) {
+	var login request.Login
+
+	err := json.NewDecoder(r.Body).Decode(&login)
+	if err != nil {
+		logrus.Errorf("NewDecoder failed. %v", err)
+		http.Error(w, fmt.Sprintf("Bad Request..."), http.StatusBadRequest)
+		return
+	}
+
+	// user login
+	err = u.usecase.Login(login.Mail, login.Password)
+	if err != nil {
+		logrus.Errorf("failed to login. %v", err)
+		http.Error(w, fmt.Sprintf("Bad Request..."), http.StatusUnauthorized)
+		return
+	}
+
+	key, err := ioutil.ReadFile("./private.key")
+	parsedKey, err := jwt.ParseRSAPrivateKeyFromPEM(key)
+	if err != nil {
+		logrus.Errorf("failed to parse RSA private key failed. %v\n", err)
+		http.Error(w, fmt.Sprintf("HTTP Request failed..."), http.StatusInternalServerError)
+	}
+
+	token := jwt.NewWithClaims(
+		jwt.SigningMethodRS256,
+		jwt.MapClaims{
+			// TODO: set user_id which is got from datastore
+			"user_id": 1,
+			// TODO: can be get expire from such as config file
+			"exp": time.Now().Add(time.Hour * 24).Unix(),
+		},
+	)
+
+	tokenStr, err := token.SignedString(parsedKey)
+	if err != nil {
+		logrus.Errorf("failed to get signed token string. %v\n", err)
+		http.Error(w, fmt.Sprintf("HTTP Request failed..."), http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	j := &Jwt{
+		Token: tokenStr,
+	}
+	b, err := json.Marshal(j)
+
+	_, err = fmt.Fprintf(w, string(b))
+	if err != nil {
+		logrus.Errorf("return response failed. %v\n", err)
 	}
 }

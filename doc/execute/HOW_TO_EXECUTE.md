@@ -32,7 +32,12 @@ $ curl -v GET "http://localhost:8000/user/get?id=3"
 - Request for Login
 
 ```bash
-$ curl -v GET "http://localhost:8000/login"
+$ curl -v POST "http://localhost:8000/login" \
+    -H "Content-Type: application/json" \
+    -d '{
+        "password": "hogehoge",
+        "mail": "testhoge@testhoge.com"
+    }'
 ```
 
 - Request for Home Index

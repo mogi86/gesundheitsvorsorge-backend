@@ -2,7 +2,9 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/sirupsen/logrus"
+	"golang.org/x/xerrors"
 	"time"
 
 	"github.com/mogi86/gesundheitsvorsorge-backend/domain/model"
@@ -121,6 +123,90 @@ AND
 	}, nil
 }
 
+// FindByMail return specified 1 user
+func (d *DBClient) FindByMail(mail string) (*model.User, error) {
+	sel := `
+SELECT
+	u.id,
+	u.password,
+	u.first_name,
+	u.last_name,
+	u.mail,
+	u.sex,
+	u.birthday,
+	u.height,
+	u.weight,
+	u.status,
+	u.created_at,
+	u.updated_at,
+	tr.id AS temp_id,
+	tr.user_id AS temp_user_id,
+	tr.token AS temp_token,
+	tr.expire_date AS temp_expire_at,
+	tr.created_at AS temp_created_at,
+	tr.updated_at AS temp_updated_at
+FROM
+	users u,
+	temporary_registrations tr
+WHERE
+	u.id = tr.user_id
+AND
+	u.mail = ?
+`
+
+	stmt, err := d.DB.Prepare(sel)
+	if err != nil {
+		logrus.Errorf("failed prepare statement. %+v\n", err)
+	}
+
+	var user UserDto
+	var temp TemporaryRegistrationDto
+
+	err = stmt.QueryRow(mail).Scan(
+		&user.ID,
+		&user.Password,
+		&user.FirstName,
+		&user.LastName,
+		&user.Mail,
+		&user.Sex,
+		&user.Birthday,
+		&user.Weight,
+		&user.Height,
+		&user.Status,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+		&temp.ID,
+		&temp.UserID,
+		&temp.Token,
+		&temp.ExpireAt,
+		&temp.CreatedAt,
+		&temp.UpdatedAt,
+	)
+
+	return &model.User{
+		ID:        user.ID,
+		Password:  user.Password,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Mail:      user.Mail,
+		Sex:       user.Sex,
+		Birthday:  user.Birthday,
+		Weight:    user.Weight,
+		Height:    user.Height,
+		Status:    user.Status,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+		TemporaryRegistration: &model.TemporaryRegistration{
+			ID:        temp.ID,
+			UserID:    temp.UserID,
+			Token:     temp.Token,
+			ExpireAt:  temp.ExpireAt,
+			CreatedAt: temp.CreatedAt,
+			UpdatedAt: temp.UpdatedAt,
+		},
+	}, nil
+}
+
 // Create create new user
 func (d *DBClient) Create(m *model.User) (*model.User, error) {
 	tx, err := d.DB.Begin()
@@ -148,6 +234,7 @@ INSERT INTO users (
 	stmt, err := d.DB.Prepare(ins)
 	if err != nil {
 		logrus.Errorf("failed prepare statement. %+v\n", err)
+		return nil, xerrors.New(fmt.Sprintf("failed prepare statement. %+v\n", err))
 	}
 
 	result, err := stmt.Exec(
@@ -165,11 +252,13 @@ INSERT INTO users (
 	)
 	if err != nil {
 		logrus.Errorf("failed execute insert operation. %+v\n", err)
+		return nil, xerrors.New(fmt.Sprintf("failed prepare statement. %+v\n", err))
 	}
 
 	lastID, err := result.LastInsertId()
 	if err != nil {
 		logrus.Errorf("failed get last inserted id. %+v\n", err)
+		return nil, xerrors.New(fmt.Sprintf("failed get last inserted id. %+v\n", err))
 	}
 	m.ID = uint64(lastID)
 
@@ -188,6 +277,7 @@ INSERT INTO temporary_registrations (
 	stmtTemp, err := d.DB.Prepare(insTemp)
 	if err != nil {
 		logrus.Errorf("failed prepare statement for temporary_registrations. %+v\n", err)
+		return nil, xerrors.New(fmt.Sprintf("failed prepare statement for temporary_registrations. %+v\n", err))
 	}
 
 	resultTemp, err := stmtTemp.Exec(
@@ -199,16 +289,19 @@ INSERT INTO temporary_registrations (
 	)
 	if err != nil {
 		logrus.Errorf("failed execute insert operation. %+v\n", err)
+		return nil, xerrors.New(fmt.Sprintf("failed execute insert operation. %+v\n", err))
 	}
 
 	err = tx.Commit()
 	if err != nil {
 		logrus.Errorf("failed commit transaction. %+v\n", err)
+		return nil, xerrors.New(fmt.Sprintf("failed commit transaction. %+v\n", err))
 	}
 
 	lastIDTemp, err := resultTemp.LastInsertId()
 	if err != nil {
 		logrus.Errorf("failed get last inserted id for temporary_registrations. %+v\n", err)
+		return nil, xerrors.New(fmt.Sprintf("failed get last inserted id for temporary_registrations. %+v\n", err))
 	}
 	m.TemporaryRegistration.ID = uint64(lastIDTemp)
 

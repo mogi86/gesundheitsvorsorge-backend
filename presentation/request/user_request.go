@@ -10,3 +10,8 @@ type UserCreate struct {
 	Weight    string `json:"weight"`
 	Height    string `json:"height"`
 }
+
+type Login struct {
+	Password string `json:"password"`
+	Mail     string `json:"mail"`
+}

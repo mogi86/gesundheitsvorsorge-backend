@@ -3,7 +3,7 @@ CREATE TABLE users (
     password VARCHAR(255) DEFAULT NULL,
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
-    mail VARCHAR(255) NOT NULL,
+    mail VARCHAR(255) NOT NULL UNIQUE,
     sex INT(1) NOT NULL,
     birthday DATE NOT NULL,
     height DECIMAL(5, 2) DEFAULT NULL,
