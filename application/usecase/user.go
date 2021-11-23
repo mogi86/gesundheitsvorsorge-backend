@@ -1,7 +1,9 @@
 package usecase
 
 import (
+	customeerr "github.com/mogi86/gesundheitsvorsorge-backend/application/error"
 	"github.com/mogi86/gesundheitsvorsorge-backend/application/helper"
+	"github.com/mogi86/gesundheitsvorsorge-backend/domain/service"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/xerrors"
 
@@ -16,11 +18,13 @@ type UserInterface interface {
 }
 
 type User struct {
+	service    service.UserServiceInterface
 	repository repository.User
 }
 
-func NewUserUseCase(r repository.User) *User {
+func NewUserUseCase(s service.UserServiceInterface, r repository.User) *User {
 	return &User{
+		service:    s,
 		repository: r,
 	}
 }
@@ -36,7 +40,16 @@ func (u *User) GetUserById(id uint64) (*model.User, error) {
 }
 
 func (u *User) CreateUser(user *model.User) (*model.User, error) {
-	user, err := u.repository.Create(user)
+	isExists, err := u.service.IsExists(user.Mail)
+	if err != nil {
+		logrus.Errorf("failed check exists mail. %+v", err)
+		return nil, xerrors.Errorf("failed check exists mail: %w", err)
+	}
+	if isExists {
+		return nil, &customeerr.NotFoundErr{}
+	}
+
+	user, err = u.repository.Create(user)
 	if err != nil {
 		logrus.Errorf("failed persist user model. %+v", err)
 		return nil, xerrors.Errorf("failed persist user model: %w", err)

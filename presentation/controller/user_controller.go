@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
+	customeerr "github.com/mogi86/gesundheitsvorsorge-backend/application/error"
 	"github.com/mogi86/gesundheitsvorsorge-backend/application/helper"
 	"github.com/mogi86/gesundheitsvorsorge-backend/presentation/request"
 	"github.com/mogi86/gesundheitsvorsorge-backend/presentation/response"
@@ -42,6 +43,10 @@ func (u *UserController) FindByID(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logrus.Errorf("failed to get user. %v", err)
 		http.Error(w, fmt.Sprintf("Bad Request..."), http.StatusBadRequest)
+		return
+	}
+	if user == nil {
+		http.NotFound(w, r)
 		return
 	}
 
@@ -129,7 +134,12 @@ func (u *UserController) Create(w http.ResponseWriter, r *http.Request) {
 
 	user, err = u.usecase.CreateUser(user)
 	if err != nil {
-		logrus.Errorf("parse height failed. %v", err)
+		if _, ok := err.(*customeerr.NotFoundErr); ok {
+			http.Error(w, fmt.Sprintf("email is already exists..."), http.StatusBadRequest)
+			return
+		}
+
+		logrus.Errorf("failed to create user %v", err)
 		http.Error(w, fmt.Sprintf("Bad Request..."), http.StatusBadRequest)
 		return
 	}

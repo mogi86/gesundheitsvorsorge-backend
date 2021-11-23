@@ -99,6 +99,14 @@ AND
 		&temp.UpdatedAt,
 	)
 
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		logrus.Errorf("failed QueryRow scan. %+v\n", err)
+		return nil, xerrors.Errorf("failed QueryRow scan: %w", err)
+	}
+
 	return &model.User{
 		ID:        user.ID,
 		Password:  user.Password,
@@ -182,6 +190,14 @@ AND
 		&temp.CreatedAt,
 		&temp.UpdatedAt,
 	)
+
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		logrus.Errorf("failed QueryRow scan. %+v\n", err)
+		return nil, xerrors.Errorf("failed QueryRow scan: %w", err)
+	}
 
 	return &model.User{
 		ID:        user.ID,

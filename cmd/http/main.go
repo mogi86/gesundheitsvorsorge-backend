@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/mogi86/gesundheitsvorsorge-backend/domain/service"
 	"github.com/mogi86/gesundheitsvorsorge-backend/presentation/middleware"
 	"net/http"
 	"time"
@@ -56,7 +57,8 @@ func main() {
 	mux := http.NewServeMux()
 
 	// User
-	userUseCase := usecase.NewUserUseCase(dbClient)
+	userService := service.NewUserService(dbClient)
+	userUseCase := usecase.NewUserUseCase(userService, dbClient)
 	userCont := controller.NewUserController(userUseCase)
 	mux.Handle("/user/get", http.HandlerFunc(userCont.FindByID))
 	mux.Handle("/user/create", http.HandlerFunc(userCont.Create))
